@@ -1,0 +1,30 @@
+version: '3.4'
+services:
+  mongo:
+    image: mongo:5.0.6
+    container_name: container_mongo
+    ports:
+      - "27017:27017"
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$DB_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$DB_PASSWORD
+      - MONGO_INITDB_DATABASE=$DB_NAME
+  api: 
+    image: node:latest
+    container_name: container_api
+    restart: always
+    depends_on:
+      - mongo
+    environment:
+      - DB_HOST=mongo
+      - DB_NAME=$DB_NAME
+      - DB_USERNAME=$DB_USERNAME
+      - DB_PASSWORD=$DB_PASSWORD
+      - SERVER_PORT=$SERVER_PORT
+    ports:
+      - $SERVER_PORT:$SERVER_PORT
+    volumes:
+      - ./:/usr/app
+    working_dir: /usr/app
+    command: bash -c "npm install && npm run dev"
